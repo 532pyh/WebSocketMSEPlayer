@@ -4,30 +4,46 @@
             <el-button type="primary" @click="keepLiveVideo">开始直播</el-button>
             <el-button type="primary" @click="stopLiveVideo">停止直播</el-button>
         </div>
-        <video ref="ch1" id="video1" width="640" height="480" controls></video>
+        <video ref="player" id="video1" width="640" height="480" controls @pause="handlePause" @play="handlePlay"></video>
     </div>
 </template>
 <script>
 export default {
     data() {
         return {
-            player:{},
+            player: null,
         }
     },
     mounted() {
-        
+
     },
     methods: {
-        keepLiveVideo(){
+        keepLiveVideo() {
             if (Wfs.isSupported()) {
-                this.player.ch1=new Wfs()
-                this.player.ch1.attachMedia(this.$refs.ch1, 'ch1','H264Raw','play2/2222/2','112.5.154.242:61161');
+                this.player = new Wfs()
+                this.player.attachMedia(this.$refs.player, 'ch1', 'H264Raw', 'play2/2222/2', '112.5.154.242:61161');
+                
             }
-            
         },
-        stopLiveVideo(){
-            if(this.player.ch1){
-                this.player.ch1.destroy();
+        stopLiveVideo() {
+            this.$refs.player.pause();
+            if (this.player) {
+                this.player.destroy();
+                this.player = null;
+            }
+        },
+        handlePause() {
+            if (this.player) {
+                this.player.destroy();
+                this.player = null;
+            }
+        },
+        handlePlay() {
+            if (!this.player) {
+                if (Wfs.isSupported()) {
+                    this.player = new Wfs()
+                    this.player.attachMedia(this.$refs.player, 'ch1', 'H264Raw', 'play2/2222/2', '112.5.154.242:61161');
+                }
             }
         }
     }
